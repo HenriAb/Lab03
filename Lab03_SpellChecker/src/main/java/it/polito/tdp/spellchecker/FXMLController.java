@@ -101,7 +101,7 @@ public class FXMLController {
     		lparole.add(parole[i]);
     	}
     	long start = System.nanoTime();
-    	List<RichWord> errate = this.model.spellTextCheck(lparole);
+    	List<RichWord> errate = this.model.spellCheckTextDichotomic(lparole); // this.model.spellCheckTextLinear(lparole); //this.model.spellTextCheck(lparole);
     	long stop = System.nanoTime();
     	String res = "Le parole errate sono:\n";
     	for(RichWord rwi : errate) {

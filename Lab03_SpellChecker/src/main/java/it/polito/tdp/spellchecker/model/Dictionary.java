@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,6 +30,8 @@ public class Dictionary {
 			while((word = br.readLine()) != null) {
 				dizionario.add(word);
 			}
+			
+			Collections.sort(dizionario); // ordino il dizionario per avere tutte le parole in ordine (lo sono gia)
 			br.close();
 			System.out.println("Dizionario di lingua " + language + " caricato correttamente. Il dizionario contiene:" + this.dizionario.size() + " parole.");
 		}catch(IOException ioe) {
@@ -40,8 +43,7 @@ public class Dictionary {
 	
 	public List<RichWord> spellTextCheck(List<String> inputTextList){
 		
-		List<RichWord> res = new ArrayList<>();
-		
+		List<RichWord> res = new ArrayList<>();	
 
 		for(String si : inputTextList) {
 			RichWord rw = new RichWord(si);
@@ -54,16 +56,70 @@ public class Dictionary {
 			}
 		}
 		
-//		int i = 0; 		// that's really really slow
-//		for(String si : this.dizionario) {
-//			if(si.contains(inputTextList.get(i))) {
-//				rw.setWord(si);
-//				rw.setCorrect(true);
-//				res.add(rw);
-//			}
-//			i++;
-//		}
+		return res;
+	}
+	
+	public List<RichWord> spellCheckTextLinear(List<String> inputTextList){
+		
+		List<RichWord> res = new ArrayList<>();
+		
+		for(String si : inputTextList) {
+			RichWord rw = new RichWord(si);
+			
+			boolean found = false;
+			
+			for(String word : this.dizionario) {
+				if(word.equalsIgnoreCase(si)) {
+					found = true;
+					break;
+				}
+			}
+			if(found) {
+				rw.setCorrect(true);
+			}
+			else {
+				rw.setCorrect(false);
+				res.add(rw);
+			}
+		}
 		
 		return res;
+	}
+	
+	public List<RichWord> spellCheckTextDichotomic(List<String> inputTextList){
+		List<RichWord> res = new ArrayList<>();
+		
+		for(String si : inputTextList) {
+			RichWord rw = new RichWord(si);
+			if(binarySearch(si.toLowerCase())) {
+				rw.setCorrect(true);
+			}
+			else {
+				rw.setCorrect(false);
+				res.add(rw);
+			}
+		}
+		
+		return res;
+	}
+
+	private boolean binarySearch(String str) {
+		
+		int inizio = 0;
+		int fine = this.dizionario.size();
+		
+		while(inizio != fine) {
+			int medio = inizio + (fine-inizio)/2;
+			if(str.compareToIgnoreCase(this.dizionario.get(medio)) ==0 ) {
+				return true;
+			}
+			else if(str.compareToIgnoreCase(this.dizionario.get(medio)) >0 ){
+				inizio = medio + 1;
+			}
+			else {
+				fine = medio;
+			}
+		}
+		return false;
 	}
 }
